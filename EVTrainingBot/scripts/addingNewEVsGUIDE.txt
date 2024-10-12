@@ -1,0 +1,28 @@
+To add a new EV type to the bot, you need to:
+
+1. Add a new folder to the EVTrainingBot\images folder with the exact name of the "evType". (for example: EVTrainingBot\images\specialAtk)
+    There should be enough in there but you can always add more regions!
+
+2. Add screenshots:
+    1. Go to the EV training spot for that EV type, grab a screenshot of you in the spot.
+    2. This will be used in the initial GUI to help YOU get to the starting position of the script next time you run it.
+    3. Drop the screenshot in paint 3D (as a 2d image), click crop, set the canvas size to 863px by 531px.
+    4. Open your town map from where you are standing, and grab a screenshot of the map around you, overlay the picture at the upper left of the canvas.
+    5. Grab a snippet of the name of the area and place that above the map in the canvas.
+    6. Save the image as "startingLocation.png" in the EVTrainingBot\images\evType folder.
+
+3. Add code to the EVTrainingBot.ahk file to handle the new EV type.
+    1. flyToPokecenter() needs to be updated, starting from the EV training spot, open your town map and see what keys are needed to be pressed
+    2. returnToEVTrainingSpot() needs to be updated with the path from the Pokecenter to the startlocation.png
+        You can use modify testEVTrainingPathing() to your liking. 5 successful loops = 95% chance of being at the EV training spot. :D
+        You can use the test_utilities.ahk file to visually see the screenAreas that are being checked.
+    3. nurseInteraction() will occasionally need to be updated if you're in a weird pokemon center.
+
+4. Add a new button to the EVTrainingBotGUI.ahk file to start the new EV training routine.
+
+
+
+Still need to do:
+    - Add a "back" button to the EVTrainingBotGUI.ahk file to return to the main menu.
+    - Add a prerequisites section to the README.txt file.
+    - Implement Special Defense EV training.
