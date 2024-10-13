@@ -8,11 +8,11 @@
 #Include "C:\Git\PokeMMO\AHKv2_Screenshot_Tools\lib\Gdip_Screenshot_Tools_Ext.ahk"
 
 global screenAreas := {
-    hotkeyBar: {x1: 0, y1: 0, x2: 2560, y2: 30},
-    battleScreen: {x1: 400, y1: 50, x2: 2160, y2: 1000},
-    battleOptions: {x1: 400, y1: 900, x2: 800, y2: 1000},
+    hotkeyBar: {x1: 250, y1: 25, x2: 2310, y2: 80},
+    battleScreen: {x1: 382, y1: 74, x2: 2175, y2: 1035},
+    battleOptions: {x1: 382, y1: 927, x2: 1010, y2: 1034},
     chat: {x1: 2, y1: 1232, x2: 395, y2: 1362},
-    firstLineChat: {x1: 2, y1: 1342, x2: 395, y2: 1362},
+    firstLineChat: {x1: 2, y1: 1342, x2: 395, y2: 1359},
     secondLineChat: {x1: 2, y1: 1324, x2: 395, y2: 1341},
     thirdLineChat: {x1: 2, y1: 1306, x2: 395, y2: 1323},
     fourthLineChat: {x1: 2, y1: 1288, x2: 395, y2: 1305},
@@ -223,9 +223,9 @@ textExists(expectedText, areaName := "") {
     }
 
     ; Optionally delete the screenshot
-    ; FileDelete(screenshotPath)
-    ; if FileExist(screenshotPath)
-    ;     MsgBox("Failed to delete screenshot: " screenshotPath)
+    FileDelete(screenshotPath)
+    if FileExist(screenshotPath)
+        MsgBox("Failed to delete screenshot: " screenshotPath)
 
     return result
 }

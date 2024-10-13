@@ -246,8 +246,6 @@ battleLoop() {
                 continue
             }
         }
-        
-        randomSleep(1200, 1800)
 
         ; Battle has started
         statusText .= "`nBattle started."
@@ -257,9 +255,9 @@ battleLoop() {
         statusText .= "`nSelecting and confirming attack."
         updateStatus(statusText)
         sendKey("z")  ; Open attack menu
-        randomSleep(250, 750)
+        randomSleep(150, 500)
         sendKey("z")  ; Confirm attack
-        randomSleep(250, 750)
+        randomSleep(150, 500)
         sendKey("z")  ; Select enemy
         randomSleep(5500, 6500)
 
@@ -278,12 +276,13 @@ battleLoop() {
         if (battlesCompleted >= battlesNeeded) {
             ToolTip()  ; Hide the tooltip
             elapsedTime := A_TickCount - startTime
-            elapsedSeconds := Round(elapsedTime / 1000, 2)
+            elapsedSeconds := Floor(elapsedTime / 1000)
+            elapsedMinutes := Floor(elapsedSeconds / 60)
+            remainingSeconds := Mod(elapsedSeconds, 60)
 
             MsgBox("You have completed the required number of battles (" . battlesNeeded . ")."
-                . "`nElapsed time: " . elapsedSeconds . " seconds."
-                . "`nPlease check your EVs.")
-            Sleep(15000)
+                . "`nElapsed time: " . elapsedMinutes . " minutes and " . remainingSeconds . " seconds."
+                . "`nPress OK to reload the script.")
             Reload()
         }
     }
