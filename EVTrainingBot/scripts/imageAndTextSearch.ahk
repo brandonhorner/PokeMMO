@@ -64,6 +64,7 @@ imageExists(imagePath, searchArea := "") {
         options := "*" variation
 
         try {
+            WinActivate(gameWindowIdentifier)
             success := ImageSearch(&FoundX, &FoundY, x1, y1, x2, y2, options " " imagePath)
             if success {
                 result := true
@@ -90,6 +91,7 @@ imageExists(imagePath, searchArea := "") {
 waitForImage(imagePath, totalWaitTimeSec := "") {
     elapsedTime := 0
     while true {
+        WinActivate(gameWindowIdentifier)
         if (imageExists(imagePath))
             return true
         randomSleep(450, 550)  ; Wait approximately 0.5 second per attempt
@@ -103,6 +105,7 @@ waitForImage(imagePath, totalWaitTimeSec := "") {
 waitForImageDisappear(imagePath, totalWaitTimeSec := "") {
     elapsedTime := 0
     while true {
+        WinActivate(gameWindowIdentifier)
         if (!imageExists(imagePath))
             return true
         randomSleep(450, 550)  ; Wait approximately 0.5 second per attempt
@@ -115,6 +118,7 @@ waitForImageDisappear(imagePath, totalWaitTimeSec := "") {
 ; Function to check if any image in the array exists
 imageExistsAny(imagePaths, searchArea := "") {
     for imagePath in imagePaths {
+        WinActivate(gameWindowIdentifier)
         if (imageExists(imagePath, searchArea)) {
             return true
         }
@@ -126,6 +130,7 @@ imageExistsAny(imagePaths, searchArea := "") {
 waitForAnyImage(imagePaths, totalWaitTimeSec := "") {
     elapsedTime := 0
     while true {
+        WinActivate(gameWindowIdentifier)
         if (imageExistsAny(imagePaths))
             return true
         randomSleep(450, 550)
@@ -139,6 +144,7 @@ waitForAnyImage(imagePaths, totalWaitTimeSec := "") {
 waitForAnyImageDisappear(imagePaths, totalWaitTimeSec := "") {
     elapsedTime := 0
     while true {
+        WinActivate(gameWindowIdentifier)
         if (!imageExistsAny(imagePaths))
             return true
         randomSleep(450, 550)
@@ -165,13 +171,14 @@ textExists(expectedText, areaName := "") {
 
     ; Create a timestamp for the filename
     timestamp := FormatTime(, "yyyyMMdd_HHmmss")
-
+    
     ; Set the screenshot path
     screenshotDir := A_ScriptDir "\Screenshots"
     if !DirExist(screenshotDir)
         DirCreate(screenshotDir)
     screenshotPath := screenshotDir "\" timestamp "_" (areaName ? areaName : "full") "_screenshot.png"
-
+    
+    WinActivate(gameWindowIdentifier)
     ; Take a screenshot of the specified area
     try {
         pToken := Gdip_Startup()
@@ -226,7 +233,7 @@ textExists(expectedText, areaName := "") {
     FileDelete(screenshotPath)
     if FileExist(screenshotPath)
         MsgBox("Failed to delete screenshot: " screenshotPath)
-
+    WinActivate(gameWindowIdentifier)
     return result
 }
 
@@ -235,6 +242,7 @@ textExists(expectedText, areaName := "") {
 waitForText(expectedText, areaName := "", totalWaitTimeSec := "") {
     elapsedTime := 0
     while true {
+        WinActivate(gameWindowIdentifier)
         if (textExists(expectedText, areaName))
             return true
         randomSleep(0, 50)  ; Wait approximately 0.05 second per attempt
@@ -248,6 +256,7 @@ waitForText(expectedText, areaName := "", totalWaitTimeSec := "") {
 waitForAnyText(expectedTexts, areaName := "", totalWaitTimeSec := "") {
     elapsedTime := 0
     while true {
+        WinActivate(gameWindowIdentifier)
         for expectedText in expectedTexts {
             if (textExists(expectedText, areaName))
                 return true
@@ -263,6 +272,7 @@ waitForAnyText(expectedTexts, areaName := "", totalWaitTimeSec := "") {
 waitForTextDisappear(expectedText, areaName := "", totalWaitTimeSec := "") {
     elapsedTime := 0
     while true {
+        WinActivate(gameWindowIdentifier)
         if (!textExists(expectedText, areaName))
             return true
         randomSleep(0, 50)

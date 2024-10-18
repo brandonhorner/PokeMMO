@@ -102,7 +102,7 @@ class EVTrainingGUI {
 
         ; Current EVs input
         this.gui.AddText("x" . xMiddle . " y" . yPos . " w" . col2Width, "Current " . evTypeDisplayName . " EVs (0 - 251):")
-        yPos += 20
+        yPos += 40
         this.evInput := this.gui.AddEdit("x" . xMiddle . " y" . yPos . " w50 Limit3 -WantReturn")
         this.evInput.Value := currentEVs  ; Set saved value
         yPos += 40

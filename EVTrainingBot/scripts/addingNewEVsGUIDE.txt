@@ -25,4 +25,4 @@ To add a new EV type to the bot, you need to:
 Still need to do:
     - Add a "back" button to the EVTrainingBotGUI.ahk file to return to the main menu.
     - Add a prerequisites section to the README.txt file.
-    - Implement Special Defense EV training.
+    - Add a config file for the main GUI so that we can type in the player name.

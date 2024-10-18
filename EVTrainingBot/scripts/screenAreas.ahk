@@ -1,7 +1,8 @@
 ; screenAreas.ahk - This script contains the screen areas for the test_utilities.ahk script. (for visualizing new screenareas)
 hotkeyBar: {x1: 250, y1: 25, x2: 2310, y2: 80}
 battleScreen: {x1: 382, y1: 74, x2: 2175, y2: 1035}
-battleOptions: {x1: 382, y1: 927, x2: 2175, y2: 1035}
+battleOptions: {x1: 382, y1: 927, x2: 1038, y2: 1035}
+battleOptionsBottomRight: {x1: 1038, y1: 927, x2: 2175, y2: 1035}
 chat: {x1: 2, y1: 1232, x2: 395, y2: 1362}
 firstLineChat: {x1: 2, y1: 1342, x2: 395, y2: 1359}
 secondLineChat: {x1: 2, y1: 1324, x2: 395, y2: 1341}

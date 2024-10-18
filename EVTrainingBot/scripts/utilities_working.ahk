@@ -25,6 +25,7 @@ resolveEndofBattle() {
                 break
             }
         }
+        
         if (imageExists(commonImageDir . "inBattle.png")) {
             statusText .= "`nwaiting .4-1.2s.."
             updateStatus(statusText)
@@ -45,9 +46,13 @@ resolveNewMoveDialogue() {
         commonImageDir . "newMoveDialogue.png",
         commonImageDir . "newMoveDialogueCustomStrings.png"
     ]
-
+    statusText .= "`nChecking for new move dialogues."
+    updateStatus(statusText)
+    randomSleep(75, 150)
     ; Check if new move dialogue is open
     if (!isNewMoveDialogueOpen(newMoveDialogues)) {
+        statusText .= "`nNew move dialogue NOT detected."
+        updateStatus(statusText)
         return false
     }
 
