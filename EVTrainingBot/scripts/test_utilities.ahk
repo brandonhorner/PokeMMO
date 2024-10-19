@@ -207,7 +207,8 @@ getColorForArea(areaName) {
     colors := Map(
         "hotkeyBar", "Red",
         ;battleScreen", "Purple",
-        "battleOptions", "Yellow",
+        "battleOptions", "ff0000",
+        "battleOptionsBottomRight", "4c00ff",
         "chat", "Green",
         "firstLineChat", "Blue",
         "secondLineChat", "Red",
@@ -216,7 +217,7 @@ getColorForArea(areaName) {
         "fifthLineChat", "Red",
         "sixthLineChat", "Yellow",
         "seventhLineChat", "Blue",
-        "myHealthBar", "Re",
+        "myHealthBar", "Red",
         "enemyHordeHealthBars", "Maroon",
         "enemyHealthBar", "Olive",
         "aboveCharacter", "Maroon",

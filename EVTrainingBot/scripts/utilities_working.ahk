@@ -41,49 +41,15 @@ resolveEndofBattle() {
 
 ; Function to resolve new move dialogues
 resolveNewMoveDialogue() {
-    global statusText, commonImageDir
-    newMoveDialogues := [
-        commonImageDir . "newMoveDialogue.png",
-        commonImageDir . "newMoveDialogueCustomStrings.png"
-    ]
-    statusText .= "`nChecking for new move dialogues."
+    global statusText
+    statusText .= "`nResolving new move dialogue."
     updateStatus(statusText)
-    randomSleep(75, 150)
-    ; Check if new move dialogue is open
-    if (!isNewMoveDialogueOpen(newMoveDialogues)) {
-        statusText .= "`nNew move dialogue NOT detected."
-        updateStatus(statusText)
-        return false
-    }
-
-    ; Cancel learning the new move
-    sendKey("x", 1, 0.5)
-
-    ; Confirmation dialogues
-    confirmationDialogues := [
-        commonImageDir . "confirmationDialogue.png",
-        commonImageDir . "confirmationDialogueCustomStrings.png"
-    ]
-
-    ; Wait for confirmation dialogue to appear
-    if (!waitForAnyImage(confirmationDialogues, 5)) {
-        statusText .= "`nCancel new move confirmation dialogue did not appear."
-        updateStatus(statusText)
-        return false
-    }
-
-    ; Confirm cancellation
-    sendKey("z", 1, 0.5)
-
-    ; Wait for confirmation dialogue to disappear
-    if (!waitForAnyImageDisappear(confirmationDialogues, 5)) {
-        statusText .= "`nCancel new move confirmation dialogue did not disappear."
-        updateStatus(statusText)
-        return false
-    }
-
-    return true
+    sendKey("x")
+    randomSleep(200, 500)
+    sendKey("z")
+    randomSleep(200, 500)
 }
+
 
 ; Function to check if the new move dialogue is open
 isNewMoveDialogueOpen(newMoveDialogues) {
@@ -93,53 +59,17 @@ isNewMoveDialogueOpen(newMoveDialogues) {
 
 ; Function to resolve evolution screens
 resolveEvolutionScreen() {
-    global statusText, allowEvolutions, commonImageDir
-    evolutionScreens := [
-        commonImageDir . "evolutionScreen.png",
-        commonImageDir . "evolutionScreenCustomStrings.png"
-    ]
-    confirmationDialoguesEvolution := [
-        commonImageDir . "confirmationDialogueEvolution.png",
-        commonImageDir . "confirmationDialogueEvolutionCustomStrings.png"
-    ]
-
-    if (imageExistsAny(evolutionScreens)) {
-        statusText .= "`nEvolution screen detected."
+    global statusText, allowEvolutions
+    if (allowEvolutions) {
+        statusText .= "`nAllowing evolution. Waiting for evolution to complete."
         updateStatus(statusText)
-        if (allowEvolutions) {
-            statusText .= "`nAllowing evolution. Waiting for evolution to complete."
-            updateStatus(statusText)
-            randomSleep(14500, 15500)  ; Adjust duration as needed
-            ; After evolution, check for new moves or additional evolutions
-            resolveEndofBattle()
-            return
-        } else {
-            statusText .= "`nPreventing evolution."
-            updateStatus(statusText)
-            ; Press 'x' to cancel the evolution
-            sendKey("x", 0.6, 0.3)
-
-            ; Wait for the confirmation dialogue to appear
-            if (!waitForAnyImage(confirmationDialoguesEvolution, 10)) {
-                statusText .= "`nEvolution confirmation dialogue did not appear."
-                updateStatus(statusText)
-                return false
-            }
-
-            ; Press 'z' to confirm
-            sendKey("z", 0.6, 0.3)
-
-            ; Wait for the confirmation dialogue to disappear
-            if (!waitForAnyImageDisappear(confirmationDialoguesEvolution, 10)) {
-                statusText .= "`nEvolution confirmation dialogue did not disappear."
-                updateStatus(statusText)
-                return false
-            }
-            return true
-        }
+        Sleep(15000)  ; Adjust duration as needed
     } else {
-        statusText .= "`nEvolution screen NOT detected."
+        statusText .= "`nPreventing evolution."
         updateStatus(statusText)
+        sendKey("x")
+        randomSleep(200, 500)
+        sendKey("z")
+        randomSleep(1500, 2000)
     }
-    return false
 }
