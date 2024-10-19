@@ -172,7 +172,7 @@ textExists(expectedText, areaName := "") {
     width := searchArea ? (searchArea.x2 - searchArea.x1) : A_ScreenWidth
     height := searchArea ? (searchArea.y2 - searchArea.y1) : A_ScreenHeight
 
-    maxAttempts := 5
+    maxAttempts := 2
 
     Loop maxAttempts {
         attempt := A_Index
@@ -264,8 +264,8 @@ waitForText(expectedText, areaName := "", totalWaitTimeSec := "") {
         WinActivate(gameWindowIdentifier)
         if (textExists(expectedText, areaName))
             return true
-        randomSleep(0, 50)  ; Wait approximately 0.05 second per attempt
-        elapsedTime += 0.05
+        randomSleep(0, 50)  ; Wait approximately 0.5 second per attempt
+        elapsedTime += 0.5
         if (totalWaitTimeSec && elapsedTime >= totalWaitTimeSec)
             return false
     }
@@ -281,7 +281,7 @@ waitForAnyText(expectedTexts, areaName := "", totalWaitTimeSec := "") {
                 return true
         }
         randomSleep(0, 50)
-        elapsedTime += 0.05
+        elapsedTime += 0.5
         if (totalWaitTimeSec && elapsedTime >= totalWaitTimeSec)
             return false
     }
@@ -295,7 +295,7 @@ waitForTextDisappear(expectedText, areaName := "", totalWaitTimeSec := "") {
         if (!textExists(expectedText, areaName))
             return true
         randomSleep(0, 50)
-        elapsedTime += 0.05
+        elapsedTime += 0.5
         if (totalWaitTimeSec && elapsedTime >= totalWaitTimeSec)
             return false
     }
