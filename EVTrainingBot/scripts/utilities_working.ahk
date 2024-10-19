@@ -46,25 +46,13 @@ resolveNewMoveDialogue() {
     statusText .= "`nResolving new move dialogue."
     updateStatus(statusText)
     randomSleep(75, 150)
-    ; Check if new move dialogue is open
-    if (!isNewMoveDialogueOpen(newMoveDialogues)) {
-        statusText .= "`nNew move dialogue NOT detected."
-        updateStatus(statusText)
-        return false
-    }
 
     ; Cancel learning the new move
     sendKey("x", 1, 0.5)
-
     ; Confirm cancellation
     sendKey("z", 1, 0.5)
 
     return true
-}
-    sendKey("x")
-    randomSleep(200, 500)
-    sendKey("z")
-    randomSleep(200, 500)
 }
 
 
