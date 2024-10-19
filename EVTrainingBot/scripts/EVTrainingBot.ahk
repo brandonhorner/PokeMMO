@@ -179,9 +179,10 @@ evTrainingProcess() {
 ; BRANDO. You have more additions from chatGPT to potentially add.. Your bot needs to be able to handle the case where we aren't in battle, and we are out of pp
 ; The script doesn't seem to be able to determine if we are out of battle easily. test isInBattle() function maybe it's time to implement the timestamp method. check the current time and compare it to the chat message mentioning "evolving."
 
+; 2. This is the main loop for battling, the following functions are part of this flow.
 battleLoop() {
     global battlesCompleted, battlesNeeded, statusText, allowEvolutions, gameWindowIdentifier, yPos
-    global evType, evTypeDisplayName, commonImageDir, playerName, screenAreas
+    global evType, evTypeDisplayName, commonImageDir
 
     startTime := A_TickCount  ; Record the start time
     yPos := 0  ; Reset yPos for tooltips
@@ -189,58 +190,137 @@ battleLoop() {
 
     Loop {
         loopCounter += 1
-        statusText := "EV Type: " . evTypeDisplayName . "`nLoop iteration #" . loopCounter . "`nBattles Completed: " . battlesCompleted . " / " . battlesNeeded
+        statusText := "EV Type: " . evTypeDisplayName . "`n" . "Loop iteration #" . loopCounter . "`n" . "Battles Completed: " . battlesCompleted . " / " . battlesNeeded
         updateStatus(statusText)
 
-        ; -------------------------------
-        ; Determine Game State
-        ; -------------------------------
-        inBattle := isInBattle()
-        if (inBattle) {
-            statusText .= "`nIn battle detected."
+        ; Check for 'outOfPP.png' before casting Sweet Scent
+        if (imageExists(commonImageDir . "outOfPP.png")) {
+            statusText .= "`nOut of PP detected. Healing and returning."
+            updateStatus(statusText)
+            healAndReturn()
+        }
+        ; Need to check to random pokemon encounter here or recommend the smoke ball?
+        ; Use Sweet Scent (press '4')
+        statusText .= "`nUsing Sweet Scent (pressing '4')."
+        updateStatus(statusText)
+        sendKey("4")
+
+        ; Wait for the battle to start
+        Sleep(6000)
+
+        ; Wait for 'FIGHT' text to appear in battleOptions
+        statusText .= "`nChecking for 'FIGHT'."
+        updateStatus(statusText)
+
+        hordeFound := false
+        fightFound := false
+
+        fightFound := waitForText("FIGHT", "battleOptions", 6)
+
+        if (!fightFound) {
+            statusText .= "`nBattle did not start within 6 seconds. nRestarting loop in 5 seconds."
             updateStatus(statusText)
 
-            ; -------------------------------
-            ; Handle In-Battle Scenarios
-            ; -------------------------------
-            handleBattle()
-        } else {
-            statusText .= "`nNot in battle."
-            updateStatus(statusText)
-
-            ; -------------------------------
-            ; Handle Out-of-Battle Scenarios
-            ; -------------------------------
-            if (isOutOfPP()) {
-                statusText .= "`nOut of PP detected. Healing and returning."
+            randomSleep(800, 1200)
+            Loop 3 {
+                statusText .= "`n" . (4 - A_Index)
                 updateStatus(statusText)
-                healAndReturn()
-                continue  ; Restart loop after healing
+                randomSleep(800, 1200)
+            }
+            ; Restart the loop
+            continue
+
+        } else if (fightFound) {
+            hordeFound := hordeExistsChatBox()
+
+            ; Check for shiny and prevent logout if found
+            statusText .= "`nFight found, checking for shiny: "
+            updateStatus(statusText)
+            shinyFoundHorde := false
+            shinyFoundSingle := false
+            if (hordeFound) 
+            {
+                shinyFoundHorde := textExists("Shiny", "enemyHordeHealthBars")
+            } else {
+                shinyFoundSingle := textExists("Shiny", "enemyHealthBar")
+            }
+            if (shinyFoundHorde || shinyFoundSingle){
+                statusText .= "`nShiny found! Preventing logout."
+                updateStatus(statusText)
+
+                ; Go right, then down, and 'z' to run
+                sendKey("right", , 0.3)
+                Loop {
+                    sendKey("z", , 5)
+                    sendKey("x", , 5)
+                }
+            } else {
+                statusText .= "No shiny.. :("
+                updateStatus(statusText)
             }
 
-            ; Use Sweet Scent to start a battle
-            statusText .= "`nUsing Sweet Scent (pressing '4')."
-            updateStatus(statusText)
-            sendKey("4")
-
-            ; Wait for the battle to start
-            Sleep(6500)
-
-            ; Check if battle started
-            inBattle := isInBattle()
-            if (inBattle) {
-                statusText .= "`nBattle started."
+            if (hordeFound) {
+                statusText .= "`nHorde battle detected."
                 updateStatus(statusText)
             } else {
-                statusText .= "`nBattle did not start. Retrying."
+                statusText .= "`nFIGHT found, but not a horde battle. Running away."
                 updateStatus(statusText)
+                ; Go right, then down, and 'z' to run
+                sendKey("right", , 0.3)
+                sendKey("down", , 0.3)
+                sendKey("z", , 5)
                 continue
             }
-        }
 
-        ; -------------------------------
-        ; Check Battle Completion
-        ; -------------------------------
+        }
+        battleMoveCounter := 0
+        ; Battle has started
+        statusText .= "`nBattling started."
+        updateStatus(statusText)
+
+        ; While we see enemy health bars, we continue to battle
+        while (battleMoveCounter = 0 || textExists("L", "enemyHordeHealthBars" || textExists("L", "enemyHealthBar")))
+        {
+            fightFound := false
+            if(battleMoveCounter = 0 || textExists("FIGHT", "battleScreen") || textExists("FIGHT", "battleOptions"))
+            {
+                fightFound := true
+                if (battleMoveCounter >= 1)
+                {
+                    statusText .= "`nThe battle continues..."
+                    updateStatus(statusText)
+                }
+                battleMoveCounter += 1
+                statusText .= "`nBattlemove #" . battleMoveCounter
+                updateStatus(statusText)
+                
+                statusText .= "`nSelecting and confirming attack."
+                updateStatus(statusText)
+                sendKey("z")  ; Open attack menu
+                randomSleep(150, 500)
+                sendKey("z")  ; Confirm attack
+                randomSleep(150, 500)
+                sendKey("z")  ; Select enemy
+                randomSleep(5500, 6500)
+
+                ; Resolve end of battle
+                statusText .= "`nResolving end of battle."
+                updateStatus(statusText)
+                resolveEndofBattle()
+
+                ; Increment battlesCompleted
+                battlesCompleted += 1
+                statusText .= "`nBattle completed! Total battles completed: " . battlesCompleted . " / " . battlesNeeded
+                updateStatus(statusText)    
+            }
+            else
+            {
+                Sleep(1000)
+                statusText .= "`nThe battle has ended! (or I can't find FIGHT..)"
+                updateStatus(statusText)
+            }
+        }
+        ; Check if required number of battles is reached
         if (battlesCompleted >= battlesNeeded) {
             ToolTip()  ; Hide the tooltip
             elapsedTime := A_TickCount - startTime
@@ -255,6 +335,7 @@ battleLoop() {
         }
     }
 }
+
 
 handleBattle() {
     global statusText, battlesCompleted, allowEvolutions, playerName
