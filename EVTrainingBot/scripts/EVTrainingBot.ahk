@@ -68,7 +68,7 @@ main() {
 
     ; Add buttons for each EV type with proper event handlers
     mainGui.AddButton("x120 w200 h40 Center", "HP Kanto").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("hp", "HP (Dunsparce) Kanto"))
-    mainGui.AddButton("w200 h40 Center", "Attack Sinnoh").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("attack", "Attack (Rhydon) Kanto"))
+    mainGui.AddButton("w200 h40 Center", "Attack Sinnoh").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("attack", "Attack (Rhydon) Sinnoh"))
     mainGui.AddButton("w200 h40 Center", "Defense Kanto").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("defense", "Defense (Sandslash) Kanto"))
     mainGui.AddButton("w200 h40 Center", "Special Attack Kanto").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("specialAtk", "Special Attack (Golduck) Kanto"))
     mainGui.AddButton("w200 h40 Center", "Special Defense Kanto").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("specialDefKanto", "Special Defense (Tentacruel) Kanto"))
@@ -607,8 +607,14 @@ nurseInteraction() {
     sendKey("up", 1.3, 0.5)
 ;    findTileAboveCharacter(commonImageDir . "inFrontOfNurse.png")
 
-    ; Talk to the nurse
-    sendKey("z", 5.5, , 1.0)
+    if (evType == "attack") {
+        ; Talk to the nurse longer in sinnoh
+        sendKey("z", 5.5, , 5)
+    }
+    else {
+        ; Talk to the nurse
+        sendKey("z", 5.5, , 1.0)
+    }
 
     ; For defense ev training, we need to go left after talking to the nurse
     if (evType == "defense") {

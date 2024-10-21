@@ -2,8 +2,9 @@
 #Requires AutoHotkey v2.0
 #Include utilities.ahk
 #Include imageAndTextSearch.ahk
-#Include "C:\Git\PokeMMO\AHKv2_Screenshot_Tools\lib\Gdip_All.ahk"
-#Include "C:\Git\PokeMMO\AHKv2_Screenshot_Tools\lib\Gdip_Screenshot_Tools_Ext.ahk"
+#Include %A_ScriptDir%\..\..\AHKv2_Screenshot_Tools\lib\Gdip_All.ahk
+#Include %A_ScriptDir%\..\..\AHKv2_Screenshot_Tools\lib\Gdip_Screenshot_Tools_Ext.ahk
+
 CoordMode("Pixel", "Screen")
 
 
