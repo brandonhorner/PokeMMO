@@ -107,11 +107,11 @@ Image Matching Accuracy:
 
 For reliable image recognition, ensure that the screenshots are accurate and match the game's current display settings.
 Game Policies:
+Automating gameplay may violate the game's terms of service. Use this script at your own risk.
 
-Automating gameplay may violate the game's terms of service. Use this script responsibly and ensure compliance with all applicable policies.
 Script Customization:
+The script is designed to be flexible. Feel free to add/modify movement paths, hotkeys, and other parameters to suit your needs.
 
-The script is designed to be flexible. Feel free to modify movement paths, hotkeys, and other parameters to suit your needs.
 Disclaimer
 This script is provided for educational purposes. The author is not responsible for any consequences resulting from its use. Use the script responsibly and in accordance with the game's terms of service.
 

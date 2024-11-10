@@ -1,6 +1,11 @@
 ; utilities.ahk - A collection of utility functions for the EV Training scripts
 #Requires AutoHotkey v2.0
 
+; Function to update the main status tooltip
+updateStatus(statusText) {
+    global yPos
+    ToolTip(statusText, 0, yPos, 1)
+}
 
 ; Function to load settings
 loadSettings() {

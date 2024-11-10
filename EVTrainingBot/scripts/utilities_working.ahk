@@ -5,13 +5,6 @@
 #Include imageAndTextSearch.ahk
 #Include EVTrainingBot.ahk
 
-
-; Function to update the main status tooltip
-updateStatus(statusText) {
-    global yPos
-    ToolTip(statusText, 0, yPos, 1)
-}
-
 ; Function to resolve the end of battle
 resolveEndofBattle() {
     global statusText, allowEvolutions, commonImageDir
@@ -106,4 +99,24 @@ resolveEvolutionScreen() {
         updateStatus(statusText)
     }
     return false
+}
+
+; This function is used to find the tile above the character (night and day versions should be provided)
+findTileAboveCharacter(imageNameDay, imageNameNight := "") {  ; Updated to take two image parameters
+    inFrontOfCave := false
+    while(!inFrontOfCave) {
+        WinActivate(gameWindowIdentifier)
+        Sleep(Random(200, 700))
+        if (imageExists(imageNameDay, screenAreas.aboveCharacter) || imageExists(imageNameNight, screenAreas.aboveCharacter)) {  ; Check both images
+            inFrontOfCave := true
+        }
+        else if (imageExists(imageNameDay, screenAreas.aboveAndLeftofCharacter) || imageExists(imageNameNight, screenAreas.aboveAndLeftofCharacter)) {  ; Check both images
+            ; correct by going left one square
+            sendKey("left", 0.05, 0)
+        }
+        else if (imageExists(imageNameDay, screenAreas.aboveAndRightofCharacter) || imageExists(imageNameNight, screenAreas.aboveAndRightofCharacter)) {  ; Check both images
+            ; correct by going right one square
+            sendKey("right", 0.05, 0)
+        }
+    }
 }
