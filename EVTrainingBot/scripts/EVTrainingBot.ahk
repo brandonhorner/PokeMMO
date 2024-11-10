@@ -57,22 +57,26 @@ main() {
     global guiIsClosed
 
     ; Create the main GUI
-    mainGui := Gui("+Resize +ToolWindow", "EV Training Bot")
+    mainGui := Gui("+MinimizeBox +ToolWindow", "EV Training Bot")
     mainGui.SetFont("s12")
     mainGui.MarginX := 20
     mainGui.MarginY := 20
-
+    
+    mainGui.BackColor := "0xd4d4d4"  ; White background
+    mainGui.AddHotkey()
     ; Add a welcome message
     mainGui.AddText("w400 Center", "Welcome to the EV Training Bot")
     mainGui.AddText("w400 Center", "Please select the EV type you want to train:")
 
     ; Add buttons for each EV type with proper event handlers
-    mainGui.AddButton("x120 w200 h40 Center", "HP Kanto").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("hp", "HP (Dunsparce) Kanto"))
+    button1 := mainGui.AddButton("x120 w200 h40 Center", "HP Kanto").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("hpKanto", "HP (Dunsparce) Kanto"))
+;    button1.Background := "0x00FF00"
+    mainGui.AddButton("w200 h40 Center", "HP Hoenn").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("hpHoenn", "HP (Marill) Hoenn"))
     mainGui.AddButton("w200 h40 Center", "Attack Sinnoh").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("attack", "Attack (Rhydon) Sinnoh"))
     mainGui.AddButton("w200 h40 Center", "Defense Kanto").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("defense", "Defense (Sandslash) Kanto"))
     mainGui.AddButton("w200 h40 Center", "Special Attack Kanto").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("specialAtk", "Special Attack (Golduck) Kanto"))
     mainGui.AddButton("w200 h40 Center", "Special Defense Kanto").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("specialDefKanto", "Special Defense (Tentacruel) Kanto"))
-    mainGui.AddButton("w200 h40 Center", "Special Defense Hoenn (exp)").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("specialDefHoenn", "Special Defense (Tentacruel) Hoenn"))
+    mainGui.AddButton("w200 h50 Center", "Special Defense Hoenn (exp)").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("specialDefHoenn", "Special Defense (Tentacruel) Hoenn"))
     mainGui.AddButton("w200 h40 Center", "Speed Kanto").OnEvent("Click", (CtrlObj, EventInfo) => evTrainingInit("speed", "Speed (Pidgeot) Kanto"))
 
     ; Show the GUI without invalid options
@@ -176,9 +180,6 @@ evTrainingProcess() {
     return
 }
 
-; BRANDO. You have more additions from chatGPT to potentially add.. Your bot needs to be able to handle the case where we aren't in battle, and we are out of pp
-; The script doesn't seem to be able to determine if we are out of battle easily. test isInBattle() function maybe it's time to implement the timestamp method. check the current time and compare it to the chat message mentioning "evolving."
-
 ; 2. This is the main loop for battling, the following functions are part of this flow.
 battleLoop() {
     global battlesCompleted, battlesNeeded, statusText, allowEvolutions, gameWindowIdentifier, yPos
@@ -215,7 +216,7 @@ battleLoop() {
         hordeFound := false
         fightFound := false
 
-        fightFound := waitForText("FIGHT", "battleOptions", 6)
+        fightFound := waitForText("Turn", "firstLineChat", 6)
 
         if (!fightFound) {
             statusText .= "`nBattle did not start within 6 seconds. nRestarting loop in 5 seconds."
@@ -448,11 +449,11 @@ isOutOfPP() {
 
 isBattleStarting() {
     global playerName
-    return textExists("horde", "battleOptions") || textExists(playerName, "battleOptions")
+    return textExists("horde", "battleOptions") || textExists(playerName, "battleOptions") ;     return textExists(playerName, "battleOptions")
 }
 
 waitForFight() {
-    return waitForText("FIGHT", "battleOptions", 3)
+    return waitForText("FIGHT", "battleOptions", 2)  ;    return waitForText("Turn", "chat", 2)
 }
 
 battleMoveSequence() {
@@ -501,7 +502,7 @@ hordeExistsChatBox() {
     global playerName
 
     ; Define the lines from bottom to top
-    chatLines := ["firstLineChat", "secondLineChat", "thirdLineChat", "fourthLineChat", "fifthLineChat", "sixthLineChat", "seventhLineChat"]
+    chatLines := ["fourthLineChat", "fifthLineChat", "sixthLineChat", "seventhLineChat"]  ; "firstLineChat", "secondLineChat", "thirdLineChat",
 
     ; Iterate through the chatLines using an index
     for i, lineNumber in chatLines {
@@ -510,7 +511,7 @@ hordeExistsChatBox() {
             ; Line has text, now check if "horde" exists in this line
             if (textExists("horde", lineNumber)) {
                 return true  ; "horde" found in the first line with text
-            } else if (textExists(playerName, lineNumber)) {
+            } else if (textExists(playerName, lineNumber) || textExists("effects", lineNumber)) {
                 ; Now check if 'horde' exists in the next line above (i + 1)
                 if (i < chatLines.Length) {
                     nextLineName := chatLines[i + 1]
@@ -563,7 +564,7 @@ flyToPokecenter() {
         sendKey("2")
         sendKey("left", 0.07)
     }
-    else if (evType == "hp") {
+    else if (evType == "hpKanto") {
         ; Select town map
         sendKey("2")
         sendKey("left", 0.07, 0.2)
@@ -588,6 +589,11 @@ flyToPokecenter() {
         ; Select town map
         sendKey("2", , 0.5)
     }
+    else if (evType == "hpHoenn") {
+        ; Select town map
+        sendKey("2", , 0.5)
+        sendKey("right", .07, 0.2)
+    }
     ; Confirm the city and wait for the animation
     sendKey("z", , 4.5, , 4.5)
 }
@@ -609,7 +615,7 @@ nurseInteraction() {
 
     if (evType == "attack") {
         ; Talk to the nurse longer in sinnoh
-        sendKey("z", 5.5, , 5)
+        sendKey("z", 5.5, , 5.5)
     }
     else {
         ; Talk to the nurse
@@ -623,7 +629,7 @@ nurseInteraction() {
     }
 
     ; Go back outside of the Pokécenter 
-    sendKey("down", 1.4, 1.5)
+    sendKey("down", 1.8, 1.5)
 }
 
 
@@ -658,7 +664,7 @@ returnToEVTrainingSpot() {
         ; Go up to grass patch
         sendKey("up", .50, 0)
 
-    } else if (evType == "hp") { 
+    } else if (evType == "hpKanto") { 
         ; Go down from pokecenter
         sendKey("down", 0.45, 0)
         ; Go left past corner
@@ -732,15 +738,27 @@ returnToEVTrainingSpot() {
 
     } else if (evType == "specialDefHoenn") {
         ; Press 'down' to go down from the pokecenter
-        sendKey("down", 0.2, 0.05)
+        sendKey("down", 0.2, 0.07)
         ; Press 'right' to go to towards the water
-        sendKey("right", 1.7, 0.05)
+        sendKey("right", 1.7, 0.07)
         ; Press 'down' to go to the treeline
-        sendKey("down", 0.3, 0.05)
+        sendKey("down", 0.3, 0.07)
         ; Press 'right' to go to towards the water
-        sendKey("right", 1.6, 0.05)
+        sendKey("right", 1.6, 0.07)
         ; Press 'down' to go to the water
-        sendKey("down", 0.3, 0.05)
+        sendKey("down", 0.28, 0.07)
+        ; Press 'z' to initiate surf
+        sendKey("z", , 0.3)
+        ; Press 'z' to confirm surf
+        sendKey("z", 2, 1)
+        
+    } else if (evType == "hpHoenn") {
+        ; Press 'down' to go down from the pokecenter
+        sendKey("down", 0.1, 0.05)
+        ; Press 'left' to go to towards the water
+        sendKey("left", 2.45, 0.05)
+        ; Press 'up' to go to the water
+        sendKey("up", 0.1, 0.05)
         ; Press 'z' to initiate surf
         sendKey("z", , 0.3)
         ; Press 'z' to confirm surf
@@ -748,62 +766,34 @@ returnToEVTrainingSpot() {
     }
 }
 
-; This function is used to find the tile above the character (night and day versions should be provided)
-findTileAboveCharacter(imageNameDay, imageNameNight := "") {  ; Updated to take two image parameters
-    inFrontOfCave := false
-    while(!inFrontOfCave) {
-        WinActivate(gameWindowIdentifier)
-        Sleep(Random(200, 700))
-        if (imageExists(imageNameDay, screenAreas.aboveCharacter) || imageExists(imageNameNight, screenAreas.aboveCharacter)) {  ; Check both images
-            inFrontOfCave := true
-        }
-        else if (imageExists(imageNameDay, screenAreas.aboveAndLeftofCharacter) || imageExists(imageNameNight, screenAreas.aboveAndLeftofCharacter)) {  ; Check both images
-            ; correct by going left one square
-            sendKey("left", 0.05, 0)
-        }
-        else if (imageExists(imageNameDay, screenAreas.aboveAndRightofCharacter) || imageExists(imageNameNight, screenAreas.aboveAndRightofCharacter)) {  ; Check both images
-            ; correct by going right one square
-            sendKey("right", 0.05, 0)
-        }
-    }
-}
 
-; F3::testNurseInteraction()
+F3::testNurseInteraction()
 ; This function is used to test the nurse interaction for a different EV type
 testNurseInteraction() {
-    global evType := "defense"
+    global evType := "hpHoenn"
     WinActivate(gameWindowIdentifier)
     ; Go up into the Pokécenter
     sendKey("up", 0.9, 1)
     
-    ; For defense ev training, we need to go right first
-    if (evType == "defense") {
-        sendKey("right", 0.5, 0)
-    }
     ; Go up toward the nurse
     sendKey("up", 1.2)
     ;findTileAboveCharacter("C:\Git\PokeMMO\EVTrainingBot\images\common\inFrontOfNurse.png")
     ; Talk to the nurse
     sendKey("z", 5.5, , 1.0)
 
-    ; For defense ev training, we need to go left after talking to the nurse
-    if (evType == "defense") {
-        ; Go left
-        sendKey("left", 0.5, 0)
-    }
-
-    ; Go back outside of the Pokécenter 
+    ; Go back outside of the Pokécenter
     sendKey("down", 1.4, 1.5)
 }
 
+F2::testEVTrainingPathing()
 ; This function is used to test a new pathing for a different EV type
 ; Replace the evType and the content in the loop to what you need for that type of EV Training
 testEVTrainingPathing() {
     global commonImageDir
     global rootDir
-    
+    global customStrings := true
     ; Set the EV type variables
-    global evType := "specialDefHoenn"
+    global evType := "hpHoenn"
 
     WinActivate(gameWindowIdentifier)
     ; Define directories based on EV type
@@ -815,27 +805,24 @@ testEVTrainingPathing() {
         Sleep(1000)
         
         sendKey("1", , 0.3)
+        
         ; Press 'down' to go down from the pokecenter
-        sendKey("down", 0.2, 0.05)
-        ; Press 'right' to go to towards the water
-        sendKey("right", 1.7, 0.05)
-        ; Press 'down' to go to the treeline
-        sendKey("down", 0.3, 0.05)
-        ; Press 'right' to go to towards the water
-        sendKey("right", 1.3, 0.05)
-        ; Press 'down' to go to the water
-        sendKey("down", 0.3, 0.05)
+        sendKey("down", 0.1, 0.05)
+        ; Press 'left' to go to towards the water
+        sendKey("left", 2.45, 0.05)
+        ; Press 'up' to go to the water
+        sendKey("up", 0.1, 0.05)
         ; Press 'z' to initiate surf
         sendKey("z", , 0.3)
         ; Press 'z' to confirm surf
         sendKey("z", 2, 1)
-        ; Wait for 10 seconds
-        Sleep(2000)
-        ToolTip("Flying to pokecenter... evType: " . evType, 0, 0, 20)
-        flyToPokecenter()
-        Sleep(2000)
-        ToolTip("Interacting with nurse... evType: " . evType, 0, 0, 20)
-        testNurseInteraction()
+        
+        ; Wait for 2 seconds
+    Sleep(2000)
+    ToolTip("Flying to pokecenter... evType: " . evType, 0, 0, 20)
+    flyToPokecenter()
+    Sleep(2000)
+    ToolTip("Interacting with nurse... evType: " . evType, 0, 0, 20)
+    testNurseInteraction()
     }
 }
-

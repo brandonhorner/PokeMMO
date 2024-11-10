@@ -57,10 +57,11 @@ class EVTrainingGUI {
         loadSettings()
 
         ; Create the GUI and set properties
-        this.gui := Gui("+Resize", "EV Training - " . evTypeDisplayName)
+        this.gui := Gui(, "EV Training - " . evTypeDisplayName)
         this.gui.SetFont("s11")
         this.gui.MarginX := 10
         this.gui.MarginY := 10
+        this.gui.BackColor := "White"
 
         ; Define layout parameters
         colGap := 20
